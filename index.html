@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPP Generator - Fahrudin Andy Setyawan, S.Pd.SD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print { .no-print { display: none; } body { background: white; } }
+        .table-border { border: 2px solid black; }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans">
+    <div id="app" class="max-w-5xl mx-auto py-10 px-4">
+        
+        <header class="bg-white p-8 rounded-3xl shadow-lg flex flex-col md:flex-row items-center justify-between mb-8 no-print border-b-4 border-blue-600">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl font-black text-slate-800 uppercase tracking-tighter">AI RPP Generator</h1>
+                <p class="text-blue-600 font-bold italic">Deep Learning Specialist</p>
+                <div class="mt-4 p-2 bg-blue-50 border border-blue-100 inline-block rounded-lg text-sm font-semibold">
+                    Fahrudin Andy Setyawan, S.Pd.SD | SDN 3 Kedungwungu
+                </div>
+            </div>
+            <div class="mt-6 md:mt-0">
+                <div class="w-28 h-28 rounded-full border-4 border-blue-600 shadow-xl overflow-hidden bg-gray-200">
+                    <img src="FOTO_ANDA.jpg" alt="Foto Kepala Sekolah" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
+
+        <div class="bg-white p-8 rounded-3xl shadow-xl no-print mb-10">
+            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <span class="w-2 h-6 bg-blue-600 rounded"></span> Data Pembelajaran
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input id="sekolah" placeholder="Nama Satuan Pendidikan" class="p-3 border-2 rounded-xl outline-none focus:border-blue-500" value="SD Negeri 3 Kedungwungu">
+                <input id="mapel" placeholder="Mata Pelajaran" class="p-3 border-2 rounded-xl outline-none focus:border-blue-500">
+                <textarea id="tp" placeholder="Tujuan Pembelajaran" class="p-3 border-2 rounded-xl outline-none focus:border-blue-500 md:col-span-2"></textarea>
+            </div>
+            <button onclick="generate()" id="btn-gen" class="w-full mt-8 bg-blue-700 hover:bg-blue-800 text-white font-black py-4 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-widest">
+                Generate Rencana & LKPD
+            </button>
+        </div>
+
+        <div id="hasil-area" class="hidden bg-white p-10 shadow-2xl rounded-sm border-2 border-black min-h-screen">
+            </div>
+
+    </div>
+
+    <script>
+        async function generate() {
+            const btn = document.getElementById('btn-gen');
+            const area = document.getElementById('hasil-area');
+            
+            btn.innerText = "Sedang Menyusun RPP...";
+            btn.disabled = true;
+
+            const payload = {
+                namaSatuanPendidikan: document.getElementById('sekolah').value,
+                mataPelajaran: document.getElementById('mapel').value,
+                tujuanPembelajaran: document.getElementById('tp').value,
+                // Tambahkan field lainnya sesuai FormData Bapak
+                praktikPedagogis: ["PjBL"], 
+                jumlahPertemuan: 1,
+                jenjang: "SD",
+                kelas: "Kelas 4"
+            };
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                // Menampilkan hasil ke tabel (Simulasi renderTableContent Bapak)
+                area.innerHTML = `<h2 class="text-center font-bold text-xl uppercase mb-8">Rencana Pembelajaran Mendalam</h2>` + 
+                                `<pre class="whitespace-pre-wrap font-serif">${JSON.stringify(data, null, 2)}</pre>`;
+                area.classList.remove('hidden');
+            } catch (e) {
+                alert("Gagal koneksi!");
+            } finally {
+                btn.innerText = "Generate Rencana & LKPD";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
