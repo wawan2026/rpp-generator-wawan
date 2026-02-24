@@ -1,39 +1,36 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const fetch = require('node-fetch');
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
+  // Mengambil kunci dari Vercel Settings
+  const apiKey = process.env.GEMINI_API_KEY;
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Hanya menerima metode POST' });
+    return res.status(405).json({ message: 'Gunakan metode POST' });
   }
 
-  const { prompt } = req.body;
-
-  // Inisialisasi Google AI dengan API Key Bapak dari Environment Variable
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  
-  // MENGGUNAKAN MODEL FLASH LITE UNTUK MENGHEMAT KUOTA (Sesuai Limit di Gambar)
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+  if (!apiKey) {
+    return res.status(500).json({ error: 'API Key belum di-set di Vercel' });
+  }
 
   try {
-    const result = await model.generateContent(`
-      Bertindaklah sebagai pakar Kurikulum Merdeka. 
-      ${prompt}. 
-      Berikan respon dalam format JSON murni tanpa kata-kata pembuka.
-      Struktur JSON:
-      {
-        "tujuan": "isi tujuan pembelajaran",
-        "langkah": "isi langkah-langkah kegiatan inti"
-      }
-    `);
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: `Buatlah RPP JSON untuk materi ${req.body.materiPelajaran} dengan tujuan ${req.body.tujuanPembelajaran}. Format JSON harus: {"identifikasi":{"siswa":"..."},"pengalaman":{"pendahuluan":"...","memahami":"...","mengaplikasi":"...","refleksi":"..."},"asesmen":{"akhir":"..."},"lkpd":{"judulAktivitas":"...","tujuanEksplorasi":"...","petunjukKerja":"..."}}` }] }],
+        generationConfig: { response_mime_type: "application/json" }
+      })
+    });
 
-    const response = await result.response;
-    const text = response.text();
+    const data = await response.json();
     
-    // Membersihkan teks jika AI memberikan markdown (```json ... ```)
-    const cleanJson = text.replace(/```json|```/g, "").trim();
-    
-    res.status(200).json(JSON.parse(cleanJson));
+    if (data.candidates && data.candidates[0].content.parts[0].text) {
+      const resultText = data.candidates[0].content.parts[0].text;
+      res.status(200).json(JSON.parse(resultText));
+    } else {
+      res.status(500).json({ error: "Respon AI kosong" });
+    }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Gagal menyusun RPP. Limit API mungkin tercapai." });
+    res.status(500).json({ error: error.message });
   }
-}
+};
