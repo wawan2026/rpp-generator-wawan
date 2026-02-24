@@ -1,112 +1,106 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPP Generator AI - SD Negeri 3 Kedungwungu</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { color: #1a73e8; text-align: center; }
-        label { font-weight: bold; display: block; margin-top: 15px; }
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        button:hover { background-color: #1557b0; }
-        #hasil-rpp { margin-top: 30px; display: none; border-top: 2px solid #eee; padding-top: 20px; }
-        .loading { color: #e67e22; font-weight: bold; text-align: center; display: none; }
-        @media print { .no-print { display: none; } }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>RPP Generator AI</h2>
-    <p style="text-align: center; font-size: 14px;">SD Negeri 3 Kedungwungu</p>
-    
-    <div class="no-print">
-        <label>Pilih Fase / Kelas:</label>
-        <select id="fase">
-            <option value="A / Kelas 1-2">Fase A (Kelas 1-2)</option>
-            <option value="B / Kelas 3-4">Fase B (Kelas 3-4)</option>
-            <option value="C / Kelas 5-6">Fase C (Kelas 5-6)</option>
-        </select>
-
-        <label>Mata Pelajaran:</label>
-        <input type="text" id="mapel" placeholder="Contoh: Matematika">
-
-        <label>Topik / Materi:</label>
-        <input type="text" id="topik" placeholder="Contoh: Pecahan Senilai">
-
-        <button id="btn-generate" onclick="generateAI()">Susun RPP Otomatis</button>
-        <p id="loading-text" class="loading">Sedang memproses AI... Mohon tunggu (Sisa kuota harian terbatas)...</p>
-    </div>
-
-    <div id="hasil-rpp">
-        <div id="print-area">
-            <h3 style="text-align: center;">RENCANA PELAKSANAAN PEMBELAJARAN (RPP)</h3>
-            <p><strong>Satuan Pendidikan:</strong> SD Negeri 3 Kedungwungu</p>
-            <p><strong>Fase / Kelas:</strong> <span id="res-fase"></span></p>
-            <p><strong>Mata Pelajaran:</strong> <span id="res-mapel"></span></p>
-            <p><strong>Topik:</strong> <span id="res-topik"></span></p>
-            <hr>
-            <h4>A. TUJUAN PEMBELAJARAN</h4>
-            <div id="res-tujuan"></div>
-            <h4>B. LANGKAH PEMBELAJARAN</h4>
-            <div id="res-langkah" style="white-space: pre-wrap;"></div>
-        </div>
-        <button class="no-print" onclick="window.print()" style="background-color: #27ae60;">Cetak RPP / Simpan PDF</button>
-    </div>
-</div>
-
 <script>
-async function generateAI() {
-    const mapel = document.getElementById('mapel').value;
-    const topik = document.getElementById('topik').value;
-    const fase = document.getElementById('fase').value;
-    const btn = document.getElementById('btn-generate');
-    const load = document.getElementById('loading-text');
+        async function generateRPP() {
+            const btn = document.getElementById('btn-gen');
+            const container = document.getElementById('hasil-container');
+            const tabel = document.getElementById('hasil-tabel');
 
-    if (!mapel || !topik) {
-        alert("Mohon isi Mapel dan Topik terlebih dahulu!");
-        return;
-    }
+            // Validasi Input
+            if (!document.getElementById('namaGuru').value) return alert("Mohon isi Nama Guru terlebih dahulu, Pak Wawan.");
+            if (!document.getElementById('mataPelajaran').value) return alert("Mata Pelajaran jangan dikosongkan ya, Pak.");
 
-    // Aktifkan Loading
-    btn.disabled = true;
-    load.style.display = 'block';
-    document.getElementById('hasil-rpp').style.display = 'none';
+            btn.innerText = "SEDANG MENYUSUN RENCANA MENDALAM...";
+            btn.disabled = true;
 
-    try {
-        // PENTING: URL ini harus sesuai dengan route API di Vercel Bapak
-        const response = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                prompt: `Buatkan draf RPP Kurikulum Merdeka untuk SD. Fase: ${fase}, Mapel: ${mapel}, Topik: ${topik}. Berikan output dalam format JSON dengan key "tujuan" dan "langkah".` 
-            })
-        });
+            const pedagogis = Array.from(document.querySelectorAll('input[name="pedagogis"]:checked')).map(el => el.value);
 
-        if (!response.ok) throw new Error('Gagal koneksi ke API');
+            const payload = {
+                namaSatuanPendidikan: document.getElementById('namaSatuanPendidikan').value,
+                tahunPelajaran: document.getElementById('tahunPelajaran').value,
+                namaGuru: document.getElementById('namaGuru').value,
+                nipGuru: document.getElementById('nipGuru').value,
+                jenjang: document.getElementById('jenjang').value,
+                kelas: document.getElementById('kelas').value,
+                mataPelajaran: document.getElementById('mataPelajaran').value,
+                materiPelajaran: document.getElementById('materiPelajaran').value,
+                tujuanPembelajaran: document.getElementById('tujuanPembelajaran').value,
+                kktp: document.getElementById('kktp').value,
+                praktikPedagogis: pedagogis,
+                namaKepalaSekolah: "Fahrudin Andy Setyawan, S.Pd.SD",
+                nipKepalaSekolah: "198604242009031002"
+            };
 
-        const data = await response.json();
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-        // Tampilkan Hasil
-        document.getElementById('res-fase').innerText = fase;
-        document.getElementById('res-mapel').innerText = mapel;
-        document.getElementById('res-topik').innerText = topik;
-        document.getElementById('res-tujuan').innerHTML = data.tujuan;
-        document.getElementById('res-langkah').innerText = data.langkah;
+                if (!response.ok) throw new Error('Server Error');
 
-        document.getElementById('hasil-rpp').style.display = 'block';
-    } catch (error) {
-        alert("Gagal menyusun RPP. Pastikan internet lancar dan limit API belum habis.");
-        console.error(error);
-    } finally {
-        btn.disabled = false;
-        load.style.display = 'none';
-    }
-}
-</script>
+                const data = await response.json();
+                
+                // ISI TABEL HASIL
+                tabel.innerHTML = `
+                    <div class="text-center mb-8 border-b-4 border-double border-black pb-4">
+                        <h1 class="text-xl font-bold uppercase m-0">RENCANA PEMBELAJARAN MENDALAM</h1>
+                        <p class="text-lg font-bold uppercase m-0">TAHUN PELAJARAN ${payload.tahunPelajaran}</p>
+                    </div>
 
-</body>
-</html>
+                    <table class="w-full border-collapse border-2 border-black mb-8">
+                        <tr><td class="border-2 border-black p-3 font-bold bg-slate-50 w-1/3 text-xs">SATUAN PENDIDIKAN</td><td class="border-2 border-black p-3 font-bold uppercase text-xs">${payload.namaSatuanPendidikan}</td></tr>
+                        <tr><td class="border-2 border-black p-3 font-bold bg-slate-50 text-xs">NAMA GURU</td><td class="border-2 border-black p-3 text-xs">${payload.namaGuru}</td></tr>
+                        <tr><td class="border-2 border-black p-3 font-bold bg-slate-50 text-xs">MATA PELAJARAN</td><td class="border-2 border-black p-3 text-xs">${payload.mataPelajaran}</td></tr>
+                        <tr><td class="border-2 border-black p-3 font-bold bg-slate-50 text-xs">MATERI / KELAS</td><td class="border-2 border-black p-3 text-xs">${payload.materiPelajaran} / ${payload.kelas}</td></tr>
+                        <tr><td class="border-2 border-black p-3 font-bold bg-slate-50 italic text-blue-800 text-xs text-xs">ANALISIS SISWA (AI)</td><td class="border-2 border-black p-3 text-justify italic text-xs">${data.identifikasi.siswa}</td></tr>
+                    </table>
+
+                    <div class="space-y-6 text-sm">
+                        <h4 class="font-bold underline text-base">I. TUJUAN & KKTP:</h4>
+                        <p class="text-justify">${payload.tujuanPembelajaran}. Dengan Kriteria Ketercapaian: ${payload.kktp}</p>
+                        
+                        <h4 class="font-bold underline text-base">II. PENGALAMAN BELAJAR (DEEP LEARNING):</h4>
+                        <div class="pl-4 space-y-4">
+                            <p><strong>A. Pendahuluan:</strong> ${data.pengalaman.pendahuluan}</p>
+                            <p><strong>B. Fase Memahami:</strong> ${data.pengalaman.memahami}</p>
+                            <p><strong>C. Fase Mengaplikasi:</strong> ${data.pengalaman.mengaplikasi}</p>
+                            <p><strong>D. Fase Refleksi:</strong> ${data.pengalaman.refleksi}</p>
+                        </div>
+
+                        <h4 class="font-bold underline text-base">III. ASESMEN AKHIR:</h4>
+                        <p class="text-justify">${data.asesmen.akhir}</p>
+                    </div>
+
+                    <div class="mt-12 flex justify-between px-10 text-sm">
+                        <div class="text-center">
+                            Mengetahui,<br>Kepala Sekolah<br><br><br><br>
+                            <span class="font-bold underline uppercase">${payload.namaKepalaSekolah}</span><br>
+                            NIP. ${payload.nipKepalaSekolah}
+                        </div>
+                        <div class="text-center">
+                            Kedungwungu, ................. 2026<br>Guru Mata Pelajaran<br><br><br><br>
+                            <span class="font-bold underline uppercase">${payload.namaGuru}</span><br>
+                            NIP. ${payload.nipGuru || '...........................'}
+                        </div>
+                    </div>
+
+                    <div class="mt-16 pt-10 border-t-2 border-dashed border-slate-300">
+                        <h2 class="text-center font-bold text-lg underline mb-6 uppercase">LAMPIRAN: LEMBAR KERJA PESERTA DIDIK (LKPD)</h2>
+                        <div class="border-2 border-black p-6 bg-slate-50">
+                            <h3 class="font-bold mb-2">JUDUL AKTIVITAS: ${data.lkpd.judulAktivitas}</h3>
+                            <p class="mb-4 text-sm"><strong>Tujuan:</strong> ${data.lkpd.tujuanEksplorasi}</p>
+                            <p class="whitespace-pre-wrap leading-relaxed text-sm"><strong>Petunjuk:</strong>\n${data.lkpd.petunjukKerja}</p>
+                        </div>
+                    </div>
+                `;
+                container.classList.remove('hidden');
+                container.scrollIntoView({ behavior: 'smooth' });
+            } catch (e) {
+                console.error(e);
+                alert("Gagal menyusun RPP. Mohon pastikan Bapak sudah memasukkan API Key di Vercel Settings.");
+            } finally {
+                btn.innerText = "Generate Rencana & LKPD";
+                btn.disabled = false;
+            }
+        }
+    </script>
