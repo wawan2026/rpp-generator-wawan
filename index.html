@@ -1,4 +1,7 @@
-async function cariTP() {
+<script>
+        let tpTerpilih = "";
+
+        async function cariTP() {
             const mapel = document.getElementById('mataPelajaran').value;
             const kelas = document.getElementById('kelas').value;
             const btn = document.getElementById('btn-tp');
@@ -36,9 +39,21 @@ async function cariTP() {
                 document.getElementById('btn-gen').classList.remove('hidden');
             } catch (e) {
                 console.error(e);
-                alert("Gagal koneksi ke server. Cek internet atau Vercel Logs.");
+                alert("Gagal koneksi ke server.");
             } finally {
                 btn.innerText = "Cari Tujuan";
                 btn.disabled = false;
             }
         }
+
+        async function generateRPP() {
+            // ... kode generate RPP Bapak yang sebelumnya ...
+        }
+    </script> ```
+
+### Tips Cepat:
+Kalau Bapak merasa ragu bagian mana yang terhapus, paling aman adalah Bapak **Copy ulang** seluruh kode **`index.html`** lengkap yang saya berikan sebelumnya, lalu **Paste** semuanya untuk menggantikan isi yang sekarang.
+
+Setelah di-save (Commit), tunggu sebentar lalu buka lagi aplikasinya. Foto Bapak dan tombol-tombolnya pasti akan muncul kembali dengan rapi.
+
+**Sudah Bapak coba pasang tag `<script>` nya kembali?** Kabari saya ya Pak kalau tampilannya sudah ganteng lagi seperti semula.
