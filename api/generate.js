@@ -30,13 +30,15 @@ module.exports = async (req, res) => {
     const data = await response.json();
 
     if (data.candidates && data.candidates[0].content.parts[0].text) {
+      let rawText = data.candidates[0].content.parts[0].text;
       let cleanJson;
       try {
-        cleanJson = JSON.parse(data.candidates[0].content.parts[0].text);
+        cleanJson = JSON.parse(rawText);
+        res.status(200).json(cleanJson);
       } catch (e) {
-        return res.status(500).json({ error: "Format JSON dari AI tidak valid" });
+        // fallback: kirim raw text kalau bukan JSON valid
+        res.status(200).json({ raw: rawText });
       }
-      res.status(200).json(cleanJson);
     } else {
       res.status(500).json({ error: "AI tidak merespon dengan benar" });
     }
