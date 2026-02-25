@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Rencana Pembelajaran</title>
+    <title>Generator Rencana Pembelajaran - Pak Wawan</title>
     <style>
         :root { --primary: #2d3192; --secondary: #1a1c54; --accent: #4f46e5; --bg: #f8fafc; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
@@ -34,10 +34,7 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #334155; color: white; }
 
-        .footer-credit { 
-            padding: 20px; font-size: 12px; color: #94a3b8; 
-            border-top: 1px solid #f1f5f9; text-align: center;
-        }
+        .footer-credit { padding: 20px; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; text-align: center; }
 
         .spinner { width: 18px; height: 18px; border: 2px solid #cbd5e1; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: none; margin-right: 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -57,8 +54,9 @@
 
         <div class="section-title">Identitas Pendidik</div>
         <div class="form-grid">
-            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Masukkan Nama Guru"></div>
-            <div><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Masukkan Nama Sekolah"></div>
+            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Nama Guru"></div>
+            <div><label>NIP</label><input type="text" id="nipGuru" placeholder="NIP (Opsional)"></div>
+            <div class="full-width"><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Nama Sekolah"></div>
         </div>
 
         <div class="section-title">Akademik</div>
@@ -78,9 +76,9 @@
                     <option value="Bahasa Indonesia">Bahasa Indonesia</option>
                     <option value="Matematika">Matematika</option>
                     <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
-                    <option value="IPAS">IPAS (Ilmu Pengetahuan Alam & Sosial)</option>
+                    <option value="IPAS">IPAS</option>
                     <option value="Pendidikan Agama Islam">Pendidikan Agama Islam</option>
-                    <option value="PJOK">PJOK (Pendidikan Jasmani)</option>
+                    <option value="PJOK">PJOK</option>
                     <option value="Seni Rupa">Seni Rupa</option>
                     <option value="Seni Musik">Seni Musik</option>
                     <option value="Bahasa Inggris">Bahasa Inggris</option>
@@ -88,77 +86,10 @@
             </div>
         </div>
 
-        <div class="section-title">Isi Pembelajaran (Otomatis AI)</div>
+        <div class="section-title">Hasil Analisis AI</div>
         <div class="form-grid">
             <div class="full-width">
                 <label>Tujuan Pembelajaran (TP)</label>
-                <textarea id="resTujuan" rows="4" placeholder="Hasil TP muncul di sini..."></textarea>
+                <textarea id="resTujuan" rows="3" placeholder="Hasil TP..."></textarea>
             </div>
-            <div class="full-width">
-                <label>KKTP</label>
-                <textarea id="resKKTP" rows="4" placeholder="Hasil KKTP muncul di sini..."></textarea>
-            </div>
-        </div>
-
-        <div class="loading-box" id="loadBox" style="display:none;">
-            <div class="spinner" style="display:block;"></div>
-            <span style="font-size:13px; color:var(--primary); font-weight:600;">AI Sedang Menyusun...</span>
-        </div>
-
-        <div class="btn-group">
-            <button class="btn-primary" id="btnGen" onclick="generateAI()">GENERATE RENCANA</button>
-            <button class="btn-secondary" onclick="copyAction()">SALIN HASIL</button>
-        </div>
-
-        <div class="footer-credit">
-            Aplikasi dikembangkan secara mandiri untuk kemajuan pendidikan Indonesia.
-        </div>
-    </div>
-
-    <script>
-        async function generateAI() {
-            const kelas = document.getElementById('kelas').value;
-            const mapel = document.getElementById('mapel').value;
-            const btn = document.getElementById('btnGen');
-            const load = document.getElementById('loadBox');
-
-            if(!mapel) return alert("Pilih mata pelajaran dulu ya!");
-
-            btn.disabled = true;
-            load.style.display = 'flex';
-
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ kelas, mapel })
-                });
-                const data = await response.json();
-                document.getElementById('resTujuan').value = data.tujuan;
-                document.getElementById('resKKTP').value = data.kktp;
-            } catch (err) {
-                alert("Sistem sibuk, silakan coba lagi.");
-            }
-
-            setTimeout(() => {
-                btn.disabled = false;
-                load.style.display = 'none';
-            }, 3000);
-        }
-
-        function copyAction() {
-            const guru = document.getElementById('namaGuru').value;
-            const sekolah = document.getElementById('namaSekolah').value;
-            const mapel = document.getElementById('mapel').value;
-            const tp = document.getElementById('resTujuan').value;
-            const kktp = document.getElementById('resKKTP').value;
-            
-            if(!tp) return alert("Belum ada hasil.");
-            
-            const text = `GURU: ${guru}\nSEKOLAH: ${sekolah}\nMAPEL: ${mapel}\n\nTUJUAN PEMBELAJARAN:\n${tp}\n\nKKTP:\n${kktp}`;
-            navigator.clipboard.writeText(text);
-            alert("Hasil RPP berhasil disalin!");
-        }
-    </script>
-</body>
-</html>
+            <div class="
