@@ -1,14 +1,55 @@
-async function generateRPP() {
-    // ... bagian atas tetap sama ...
-    const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kelas, mapel })
-    });
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPP Generator - SDN 3 Kedungwungu</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; text-align: center; background-color: #f4f7f6; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        img { width: 100px; border-radius: 10px; margin-bottom: 15px; }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background-color: #2563eb; color: white; font-weight: bold; cursor: pointer; border: none; }
+        #result { margin-top: 20px; text-align: left; display: none; background: #eef2ff; padding: 15px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="wawan.png" alt="Foto Pak Wawan">
+        <h2>RPP Generator Cepat</h2>
+        <select id="kelas">
+            <option value="1">Kelas 1</option><option value="2">Kelas 2</option><option value="3">Kelas 3</option>
+            <option value="4">Kelas 4</option><option value="5">Kelas 5</option><option value="6">Kelas 6</option>
+        </select>
+        <input type="text" id="mapel" placeholder="Ketik Mata Pelajaran...">
+        <button onclick="generateRPP()">Generate Sekarang</button>
+        <div id="result">
+            <h4 id="resTitle"></h4>
+            <p><strong>Tujuan:</strong> <span id="resTujuan"></span></p>
+            <p><strong>KKM:</strong> <span id="resKKM"></span></p>
+        </div>
+    </div>
 
-    const data = await response.json();
-    
-    // Pastikan data yang diambil sesuai dengan kunci di JSON
-    document.getElementById('resTujuan').innerText = data.tujuan || "Data belum masuk";
-    document.getElementById('resKKM').innerText = data.kkm || "Data belum masuk";
-}
+    <script>
+        async function generateRPP() {
+            const kelas = document.getElementById('kelas').value;
+            const mapel = document.getElementById('mapel').value;
+            const resDiv = document.getElementById('result');
+            if(!mapel) return alert("Isi mapel dulu ya!");
+
+            resDiv.style.display = 'block';
+            document.getElementById('resTujuan').innerText = "Sedang berpikir...";
+
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kelas, mapel })
+            });
+            const data = await response.json();
+            document.getElementById('resTitle').innerText = "Hasil " + mapel + " Kelas " + kelas;
+            document.getElementById('resTujuan').innerText = data.tujuan;
+            document.getElementById('resKKM').innerText = data.kkm;
+        }
+    </script>
+</body>
+</html>
