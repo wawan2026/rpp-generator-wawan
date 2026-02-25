@@ -5,28 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPP Generator - SDN 3 Kedungwungu</title>
     <style>
-        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; text-align: center; background-color: #f4f7f6; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        img { width: 100px; border-radius: 10px; margin-bottom: 15px; }
-        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { background-color: #2563eb; color: white; font-weight: bold; cursor: pointer; border: none; }
-        #result { margin-top: 20px; text-align: left; display: none; background: #eef2ff; padding: 15px; border-radius: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; text-align: center; background-color: #f0f2f5; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        img { width: 120px; height: auto; border-radius: 15px; margin-bottom: 10px; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #1e293b; margin-bottom: 20px; }
+        select, input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 16px; box-sizing: border-box; }
+        button { background-color: #2563eb; color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        #result { margin-top: 25px; text-align: left; display: none; background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 5px solid #2563eb; }
+        .label-rpp { font-weight: bold; color: #475569; margin-top: 10px; display: block; }
     </style>
 </head>
 <body>
     <div class="card">
         <img src="wawan.png" alt="Foto Pak Wawan">
         <h2>RPP Generator Cepat</h2>
+        
         <select id="kelas">
-            <option value="1">Kelas 1</option><option value="2">Kelas 2</option><option value="3">Kelas 3</option>
-            <option value="4">Kelas 4</option><option value="5">Kelas 5</option><option value="6">Kelas 6</option>
+            <option value="1">Kelas 1</option>
+            <option value="2">Kelas 2</option>
+            <option value="3">Kelas 3</option>
+            <option value="4">Kelas 4</option>
+            <option value="5">Kelas 5</option>
+            <option value="6">Kelas 6</option>
         </select>
-        <input type="text" id="mapel" placeholder="Ketik Mata Pelajaran...">
-        <button onclick="generateRPP()">Generate Sekarang</button>
+
+        <input type="text" id="mapel" placeholder="Ketik Mata Pelajaran (Contoh: IPAS)">
+
+        <button id="btnGenerate" onclick="generateRPP()">Generate Sekarang</button>
+
         <div id="result">
-            <h4 id="resTitle"></h4>
-            <p><strong>Tujuan:</strong> <span id="resTujuan"></span></p>
-            <p><strong>KKM:</strong> <span id="resKKM"></span></p>
+            <h3 id="resTitle" style="margin-top:0; color:#1e40af;"></h3>
+            <span class="label-rpp">Tujuan Pembelajaran:</span>
+            <p id="resTujuan"></p>
+            <span class="label-rpp">KKM / KKTP:</span>
+            <p id="resKKM"></p>
         </div>
     </div>
 
@@ -34,21 +47,40 @@
         async function generateRPP() {
             const kelas = document.getElementById('kelas').value;
             const mapel = document.getElementById('mapel').value;
+            const btn = document.getElementById('btnGenerate');
             const resDiv = document.getElementById('result');
-            if(!mapel) return alert("Isi mapel dulu ya!");
+            
+            if(!mapel) return alert("Pak Wawan, silakan isi mata pelajarannya dulu ya!");
 
+            // Fitur Cooldown: Matikan tombol
+            btn.disabled = true;
+            btn.innerText = "Memproses... (Tunggu 30 detik)";
+            
             resDiv.style.display = 'block';
-            document.getElementById('resTujuan').innerText = "Sedang berpikir...";
+            document.getElementById('resTujuan').innerText = "Sedang menyusun TP...";
+            document.getElementById('resKKM').innerText = "Sedang menghitung...";
 
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ kelas, mapel })
-            });
-            const data = await response.json();
-            document.getElementById('resTitle').innerText = "Hasil " + mapel + " Kelas " + kelas;
-            document.getElementById('resTujuan').innerText = data.tujuan;
-            document.getElementById('resKKM').innerText = data.kkm;
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ kelas, mapel })
+                });
+
+                const data = await response.json();
+                
+                document.getElementById('resTitle').innerText = "Hasil " + mapel + " - Kelas " + kelas;
+                document.getElementById('resTujuan').innerText = data.tujuan || "Gagal mendapatkan data.";
+                document.getElementById('resKKM').innerText = data.kkm || "Gagal mendapatkan data.";
+            } catch (err) {
+                document.getElementById('resTujuan').innerText = "Koneksi sibuk, coba sesaat lagi.";
+            }
+
+            // Aktifkan kembali tombol setelah 30 detik
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = "Generate Sekarang";
+            }, 30000);
         }
     </script>
 </body>
