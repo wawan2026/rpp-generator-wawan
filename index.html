@@ -1,111 +1,66 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>RPP Generator</title>
-  <script>
-    let tpTerpilih = "";
-
-    async function cariTP() {
-      const mapel = document.getElementById('mataPelajaran').value;
-      const kelas = document.getElementById('kelas').value;
-      const btn = document.getElementById('btn-tp');
-      const listArea = document.getElementById('list-tp');
-
-      if (!mapel) return alert("Ketik dulu Mata Pelajarannya ya, Pak.");
-
-      btn.innerText = "Sedang Mencari TP...";
-      btn.disabled = true;
-
-      try {
-        const response = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mode: "CARI_TP", mataPelajaran: mapel, kelas: kelas })
-        });
-
-        const data = await response.json();
-
-        if (data.error) {
-          alert("Error: " + data.error);
-          return;
-        }
-
-        listArea.innerHTML = "";
-        data.pilihanTP.forEach((tp) => {
-          listArea.innerHTML += `
-            <label class="flex items-start gap-3 p-4 border-2 border-slate-100 rounded-2xl hover:bg-blue-50 cursor-pointer transition-all">
-              <input type="radio" name="pilih_tp" value="${tp}" class="mt-1" onclick="tpTerpilih = this.value">
-              <span class="text-sm font-semibold text-slate-700">${tp}</span>
-            </label>`;
-        });
-
-        document.getElementById('area-pilihan-tp').classList.remove('hidden');
-        document.getElementById('btn-gen').classList.remove('hidden');
-      } catch (e) {
-        console.error(e);
-        alert("Gagal koneksi ke server.");
-      } finally {
-        btn.innerText = "Cari Tujuan";
-        btn.disabled = false;
-      }
-    }
-
-    async function generateRPP() {
-      if (!tpTerpilih) return alert("Pilih dulu TP-nya, Pak.");
-      const mapel = document.getElementById('mataPelajaran').value;
-      const kelas = document.getElementById('kelas').value;
-
-      const btn = document.getElementById('btn-gen');
-      btn.innerText = "Sedang Membuat RPP...";
-      btn.disabled = true;
-
-      try {
-        const response = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mode: "BUAT_RPP",
-            mataPelajaran: mapel,
-            kelas: kelas,
-            tujuanPembelajaran: tpTerpilih
-          })
-        });
-
-        const data = await response.json();
-        if (data.error) {
-          alert("Error: " + data.error);
-          return;
-        }
-
-        document.getElementById('hasil-rpp').innerText = JSON.stringify(data, null, 2);
-      } catch (e) {
-        console.error(e);
-        alert("Gagal koneksi ke server.");
-      } finally {
-        btn.innerText = "Generate RPP";
-        btn.disabled = false;
-      }
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPP Generator - SD Negeri 3 Kedungwungu</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        .card { border: 1px solid #ddd; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        select, input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background-color: #2563eb; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #1d4ed8; }
+        #result { margin-top: 20px; background: #f9fafb; padding: 15px; border-radius: 8px; display: none; text-align: left; }
+    </style>
 </head>
 <body>
-  <h1>📘 RPP Generator</h1>
-  <img src="wawan.png" alt="Foto Wawan" width="150" style="border-radius: 10px; margin-bottom: 20px;">
-  
-  <div>
-    <label>Mata Pelajaran: <input id="mataPelajaran" type="text"></label><br>
-    <label>Kelas: <input id="kelas" type="text"></label><br>
-    <button id="btn-tp" onclick="cariTP()">Cari Tujuan</button>
-  </div>
+    <div class="card">
+        <img src="wawan.png" alt="Logo" style="width: 80px; display: block; margin: 0 auto;">
+        <h2 style="text-align: center;">RPP Generator Cepat</h2>
+        
+        <label>Pilih Kelas:</label>
+        <select id="kelas">
+            <option value="1">Kelas 1</option>
+            <option value="2">Kelas 2</option>
+            <option value="3">Kelas 3</option>
+            <option value="4">Kelas 4</option>
+            <option value="5">Kelas 5</option>
+            <option value="6">Kelas 6</option>
+        </select>
 
-  <div id="area-pilihan-tp" class="hidden">
-    <h3>Pilih Tujuan Pembelajaran:</h3>
-    <div id="list-tp"></div>
-  </div>
+        <label>Mata Pelajaran:</label>
+        <input type="text" id="mapel" placeholder="Contoh: Matematika, IPAS, dll.">
 
-  <button id="btn-gen" class="hidden" onclick="generateRPP()">Generate RPP</button>
+        <button onclick="generateRPP()">Generate Sekarang</button>
 
-  <pre id="hasil-rpp" style="background:#f0f0f0; padding:10px; margin-top:20px;"></pre>
+        <div id="result">
+            <h3 id="resTitle"></h3>
+            <p><strong>Tujuan Pembelajaran:</strong><br><span id="resTujuan"></span></p>
+            <p><strong>KKM / KKTP:</strong><br><span id="resKKM"></span></p>
+        </div>
+    </div>
+
+    <script>
+        async function generateRPP() {
+            const kelas = document.getElementById('kelas').value;
+            const mapel = document.getElementById('mapel').value;
+            const resDiv = document.getElementById('result');
+
+            if(!mapel) return alert("Isi mata pelajaran dulu, Pak!");
+
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kelas, mapel })
+            });
+
+            const data = await response.json();
+            
+            document.getElementById('resTitle').innerText = "Hasil RPP " + mapel + " Kelas " + kelas;
+            document.getElementById('resTujuan').innerText = data.tujuan;
+            document.getElementById('resKKM').innerText = data.kkm;
+            resDiv.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
