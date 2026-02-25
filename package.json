@@ -1,0 +1,12 @@
+{
+  "name": "rpp-generator",
+  "version": "1.0.0",
+  "description": "Aplikasi RPP Generator dengan Gemini API",
+  "main": "index.html",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
