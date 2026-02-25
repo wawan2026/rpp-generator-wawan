@@ -3,77 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPP Generator - SDN 3 Kedungwungu</title>
+    <title>Generator Rencana Pembelajaran - Pak Wawan</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; text-align: center; background-color: #f0f2f5; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        img { width: 120px; border-radius: 15px; margin-bottom: 10px; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        select, input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 16px; box-sizing: border-box; }
+        :root { --primary: #2d3192; --secondary: #1a1c54; --accent: #4f46e5; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
         
-        button { 
-            background-color: #2563eb; color: white; font-weight: bold; cursor: pointer; border: none; 
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        /* Header dengan Foto di Kanan */
+        .header { 
+            background: linear-gradient(135deg, var(--primary), var(--accent)); 
+            color: white; padding: 30px; border-radius: 15px 15px 0 0; 
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
         }
-        button:disabled { background-color: #94a3b8; cursor: not-allowed; }
-        .btn-copy { background-color: #10b981; margin-top: 15px; display: none; }
+        .header-text { text-align: left; }
+        .header img { 
+            width: 80px; height: 80px; border-radius: 50%; 
+            border: 3px solid rgba(255,255,255,0.3); object-fit: cover;
+        }
 
-        .spinner {
-            width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%; border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite; display: none;
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
+        .section-title { color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); padding-left: 10px; margin: 25px 0 15px 30px; text-align: left; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 30px; }
+        .full-width { grid-column: span 2; }
+        
+        label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; text-align: left; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fcfcfc; }
+        
+        .btn-group { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button { padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: #334155; color: white; }
+
+        /* Footer Nama Pembuat */
+        .footer-credit { 
+            padding: 20px; font-size: 12px; color: #94a3b8; 
+            border-top: 1px solid #f1f5f9; text-align: center;
         }
+
+        .spinner { width: 18px; height: 18px; border: 2px solid #cbd5e1; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: none; margin-right: 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        #result { margin-top: 25px; text-align: left; display: none; background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 5px solid #2563eb; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 10px; font-size: 14px; vertical-align: top; }
-        th { background-color: #f1f5f9; }
+        .loading-box { display: flex; align-items: center; justify-content: center; padding: 10px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <img src="wawan.png" alt="Foto Pak Wawan">
-        <h2>RPP Generator Merdeka</h2>
-        
-        <select id="kelas">
-            <option value="1">Kelas 1</option><option value="2">Kelas 2</option><option value="3">Kelas 3</option>
-            <option value="4">Kelas 4</option><option value="5">Kelas 5</option><option value="6">Kelas 6</option>
-        </select>
-        <input type="text" id="mapel" placeholder="Mata Pelajaran (Contoh: Matematika)">
-        
-        <button id="btnGenerate" onclick="generateRPP()">
-            <div id="loader" class="spinner"></div>
-            <span id="btnText">Generate RPP Sekarang</span>
-        </button>
+    <div class="container">
+        <div class="header">
+            <div class="header-text">
+                <h1 style="margin:0; font-size:22px;">GENERATOR RENCANA PEMBELAJARAN</h1>
+                <p style="margin:5px 0 0; opacity:0.8; font-size:13px;">Deep Learning Lesson Plan Specialist</p>
+            </div>
+            <img src="wawan.png" alt="Foto Pak Wawan">
+        </div>
 
-        <div id="result">
-            <h3 id="resTitle" style="color:#1e40af; margin-bottom:15px;"></h3>
-            <table>
-                <tr><th>Komponen</th><th>Uraian Kurikulum Merdeka</th></tr>
-                <tr><td><b>Tujuan (TP)</b></td><td id="resTujuan"></td></tr>
-                <tr><td><b>KKTP</b></td><td id="resKKTP"></td></tr>
-            </table>
-            <button id="btnCopy" class="btn-copy" onclick="copyToClipboard()">Salin untuk Tabel Word</button>
+        <div class="section-title">Identitas Pendidik</div>
+        <div class="form-grid">
+            <div><label>Nama Guru</label><input type="text" value="Fahrudin Andy Setyawan, S.Pd.SD" readonly></div>
+            <div><label>Satuan Pendidikan</label><input type="text" value="SD Negeri 3 Kedungwungu" readonly></div>
+        </div>
+
+        <div class="section-title">Akademik</div>
+        <div class="form-grid">
+            <div>
+                <label>Pilih Kelas</label>
+                <select id="kelas">
+                    <option value="1">Kelas 1</option><option value="2">Kelas 2</option>
+                    <option value="3">Kelas 3</option><option value="4">Kelas 4</option>
+                    <option value="5">Kelas 5</option><option value="6">Kelas 6</option>
+                </select>
+            </div>
+            <div>
+                <label>Mata Pelajaran</label>
+                <input type="text" id="mapel" placeholder="Ketik Mapel (Contoh: IPAS)">
+            </div>
+        </div>
+
+        <div class="section-title">Isi Pembelajaran (Otomatis AI)</div>
+        <div class="form-grid">
+            <div class="full-width">
+                <label>Tujuan Pembelajaran (TP)</label>
+                <textarea id="resTujuan" rows="4" placeholder="Hasil TP muncul di sini..."></textarea>
+            </div>
+            <div class="full-width">
+                <label>KKTP</label>
+                <textarea id="resKKTP" rows="4" placeholder="Hasil KKTP muncul di sini..."></textarea>
+            </div>
+        </div>
+
+        <div class="loading-box" id="loadBox" style="display:none;">
+            <div class="spinner" style="display:block;"></div>
+            <span style="font-size:13px; color:var(--primary); font-weight:600;">AI Sedang Menyusun...</span>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" id="btnGen" onclick="generateAI()">GENERATE RENCANA</button>
+            <button class="btn-secondary" onclick="copyAction()">SALIN HASIL</button>
+        </div>
+
+        <div class="footer-credit">
+            Aplikasi ini dikembangkan oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong> <br>
+            Kepala Sekolah SDN 3 Kedungwungu
         </div>
     </div>
 
     <script>
-        async function generateRPP() {
+        async function generateAI() {
             const kelas = document.getElementById('kelas').value;
             const mapel = document.getElementById('mapel').value;
-            const btn = document.getElementById('btnGenerate');
-            const loader = document.getElementById('loader');
-            const btnText = document.getElementById('btnText');
-            const resDiv = document.getElementById('result');
-            const btnCopy = document.getElementById('btnCopy');
-            
-            if(!mapel) return alert("Pak Wawan, mohon isi mata pelajarannya!");
+            const btn = document.getElementById('btnGen');
+            const load = document.getElementById('loadBox');
+
+            if(!mapel) return alert("Pilih mata pelajaran dulu ya, Pak!");
 
             btn.disabled = true;
-            loader.style.display = "block";
-            btnText.innerText = "Sabar, AI Sedang Berpikir...";
-            btnCopy.style.display = "none";
-            resDiv.style.display = 'block';
+            load.style.display = 'flex';
 
             try {
                 const response = await fetch('/api/generate', {
@@ -82,35 +125,25 @@
                     body: JSON.stringify({ kelas, mapel })
                 });
                 const data = await response.json();
-                
-                document.getElementById('resTitle').innerText = "Hasil RPP " + mapel + " Kelas " + kelas;
-                document.getElementById('resTujuan').innerText = data.tujuan;
-                document.getElementById('resKKTP').innerText = data.kktp;
-                btnCopy.style.display = "flex";
+                document.getElementById('resTujuan').value = data.tujuan;
+                document.getElementById('resKKTP').value = data.kktp;
             } catch (err) {
-                alert("Ada kendala koneksi. Coba klik lagi.");
+                alert("Sistem sibuk, silakan coba lagi.");
             }
 
             setTimeout(() => {
                 btn.disabled = false;
-                loader.style.display = "none";
-                btnText.innerText = "Generate RPP Sekarang";
-            }, 30000);
+                load.style.display = 'none';
+            }, 5000);
         }
 
-        function copyToClipboard() {
-            const title = document.getElementById('resTitle').innerText;
-            const tp = document.getElementById('resTujuan').innerText;
-            const kktp = document.getElementById('resKKTP').innerText;
-            
-            const tableFormat = `RENCANA AKSI PEMBELAJARAN\n${title}\n\n` +
-                                `KOMPONEN | URAIAN\n` +
-                                `Tujuan Pembelajaran (TP) | ${tp}\n` +
-                                `KKTP | ${kktp}`;
-            
-            navigator.clipboard.writeText(tableFormat).then(() => {
-                alert("Berhasil disalin! Di Word, gunakan 'Insert > Table > Convert Text to Table' dengan pemisah '|'.");
-            });
+        function copyAction() {
+            const tp = document.getElementById('resTujuan').value;
+            const kktp = document.getElementById('resKKTP').value;
+            if(!tp) return alert("Belum ada hasil yang bisa disalin.");
+            const text = `TUJUAN PEMBELAJARAN:\n${tp}\n\nKKTP:\n${kktp}`;
+            navigator.clipboard.writeText(text);
+            alert("Hasil RPP berhasil disalin ke clipboard!");
         }
     </script>
 </body>
