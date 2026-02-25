@@ -4,11 +4,11 @@ export default async function handler(req, res) {
   const { kelas, mapel } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
 
-  const prompt = `Buatlah ringkasan RPP untuk mata pelajaran ${mapel} di Kelas ${kelas} SD. 
+  const prompt = `Anda adalah asisten kurikulum SD. Buatlah ringkasan RPP untuk mata pelajaran ${mapel} di Kelas ${kelas} SD sesuai Kurikulum Merdeka. 
   Berikan jawaban dalam format JSON murni: 
   {
-    "tujuan": "isi poin tujuan pembelajaran",
-    "kkm": "angka dan penjelasan"
+    "tujuan": "Berikan 3-4 poin tujuan pembelajaran yang konkret.",
+    "kktp": "Berikan deskripsi Kriteria Ketercapaian Tujuan Pembelajaran (KKTP) yang sesuai."
   }`;
 
   try {
@@ -16,24 +16,20 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { response_mime_type: "application/json" }
       })
     });
 
     const data = await response.json();
-    
-    // Mengambil teks mentah dari AI
-    let rawText = data.candidates[0].content.parts[0].text;
-    
-    // Membersihkan karakter aneh jika ada
-    const cleanJson = JSON.parse(rawText.replace(/```json|```/g, '').trim());
+    const rawText = data.candidates[0].content.parts[0].text;
+    const cleanJson = JSON.parse(rawText.trim());
     
     res.status(200).json(cleanJson);
   } catch (error) {
-    console.error(error);
     res.status(200).json({ 
       tujuan: "Maaf, sistem sedang sibuk. Silakan coba klik tombol Generate lagi.", 
-      kkm: "Belum tersedia" 
+      kktp: "Belum tersedia" 
     });
   }
 }
