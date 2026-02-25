@@ -3,34 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator RPP & LKPD - Pak Wawan</title>
+    <title>Generator Rencana Pembelajaran - Pak Wawan</title>
     <style>
         :root { --primary: #2d3192; --secondary: #1a1c54; --accent: #4f46e5; --bg: #f8fafc; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
-        
-        .header { 
-            background: linear-gradient(135deg, var(--primary), var(--accent)); 
-            color: white; padding: 30px; border-radius: 15px 15px 0 0; 
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-        }
+        .header { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 30px; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .header img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
-
         .container { max-width: 850px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
         .section-title { color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); padding-left: 10px; margin: 25px 30px 15px; text-align: left; }
-        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 30px; }
         .full-width { grid-column: span 2; }
-        
         label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; text-align: left; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fcfcfc; }
-        
-        /* Area Tombol */
         .btn-group { padding: 30px; display: flex; gap: 15px; justify-content: center; }
         button { flex: 1; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: #10b981; color: white; } /* Tombol Salin jadi Hijau agar kontras */
-
+        .btn-secondary { background: #10b981; color: white; }
         .footer-credit { padding: 20px; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; text-align: center; }
         .spinner { width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -42,16 +30,16 @@
             <div style="text-align:left;">
                 <h1 style="margin:0; font-size:22px;">GENERATOR RENCANA PEMBELAJARAN</h1>
                 <p style="margin:5px 0 0; opacity:0.8; font-size:13px;">Deep Learning Lesson Plan Specialist</p>
-                <input type="text" id="devName" value="Fahrudin Andy Setyawan, S.Pd.SD" style="background:none; border:none; color:white; font-size:12px; padding:0; width:300px; margin-top:10px; font-weight:bold;" placeholder="Nama Pembuat">
+                <input type="text" id="devName" value="Fahrudin Andy Setyawan, S.Pd.SD" style="background:none; border:none; color:white; font-size:12px; padding:0; width:300px; margin-top:10px; font-weight:bold;">
             </div>
-            <img src="wawan.png" alt="Foto Pak Wawan">
+            <img src="wawan.png" alt="Foto">
         </div>
 
         <div class="section-title">Identitas Pendidik & Akademik</div>
         <div class="form-grid">
-            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Nama Guru"></div>
-            <div><label>NIP</label><input type="text" id="nipGuru" placeholder="Masukkan NIP"></div>
-            <div class="full-width"><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Nama Sekolah"></div>
+            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Ketik Nama Guru"></div>
+            <div><label>NIP</label><input type="text" id="nipGuru" placeholder="Ketik NIP"></div>
+            <div class="full-width"><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Ketik Nama Sekolah"></div>
             <div>
                 <label>Pilih Kelas</label>
                 <select id="kelas">
@@ -77,31 +65,29 @@
 
         <div class="btn-group">
             <button class="btn-primary" id="btnGen" onclick="generateAI()">
-                <div id="loader" class="spinner" style="display:inline-block; margin-right:8px; display:none;"></div>
+                <div id="loader" class="spinner" style="display:none; vertical-align:middle; margin-right:8px;"></div>
                 <span id="btnText">GENERATE SEKARANG</span>
             </button>
             <button class="btn-secondary" onclick="copyAction()">SALIN SEMUA HASIL</button>
         </div>
 
-        <div class="section-title">Hasil Analisis AI (TP, KKTP, & LKPD)</div>
+        <div class="section-title">Hasil Analisis AI</div>
         <div class="form-grid">
             <div class="full-width">
                 <label>Tujuan Pembelajaran (TP)</label>
                 <textarea id="resTujuan" rows="3" placeholder="Hasil TP..."></textarea>
             </div>
             <div class="full-width">
-                <label>KKTP (Kriteria Ketercapaian)</label>
+                <label>KKTP</label>
                 <textarea id="resKKTP" rows="3" placeholder="Hasil KKTP..."></textarea>
             </div>
             <div class="full-width">
-                <label>Draf LKPD (Tugas Siswa)</label>
+                <label>Draf LKPD</label>
                 <textarea id="resLKPD" rows="6" placeholder="Hasil LKPD..."></textarea>
             </div>
         </div>
 
-        <div class="footer-credit">
-            Aplikasi dikembangkan secara mandiri oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong>
-        </div>
+        <div class="footer-credit">Aplikasi dikembangkan oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong></div>
     </div>
 
     <script>
@@ -112,7 +98,7 @@
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btnText');
 
-            if(!mapel) return alert("Silakan pilih mata pelajaran!");
+            if(!mapel) return alert("Pak Wawan, mohon pilih mata pelajaran terlebih dahulu!");
 
             btn.disabled = true;
             loader.style.display = 'inline-block';
@@ -124,33 +110,31 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ kelas, mapel })
                 });
+
                 const data = await response.json();
-                document.getElementById('resTujuan').value = data.tujuan;
-                document.getElementById('resKKTP').value = data.kktp;
-                document.getElementById('resLKPD').value = data.lkpd;
+                
+                // Sinkronisasi ID Kotak Tampilan
+                document.getElementById('resTujuan').value = data.tujuan || "Gagal memuat TP";
+                document.getElementById('resKKTP').value = data.kktp || "Gagal memuat KKTP";
+                document.getElementById('resLKPD').value = data.lkpd || "Gagal memuat LKPD";
+
             } catch (err) {
                 alert("Sistem sedang sibuk. Silakan coba lagi.");
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = "GENERATE SEKARANG";
             }
-
-            btn.disabled = false;
-            loader.style.display = 'none';
-            btnText.innerText = "GENERATE SEKARANG";
         }
 
         function copyAction() {
-            const guru = document.getElementById('namaGuru').value;
-            const nip = document.getElementById('nipGuru').value;
-            const sekolah = document.getElementById('namaSekolah').value;
-            const mapel = document.getElementById('mapel').value;
             const tp = document.getElementById('resTujuan').value;
             const kktp = document.getElementById('resKKTP').value;
             const lkpd = document.getElementById('resLKPD').value;
-            
             if(!tp) return alert("Belum ada data untuk disalin.");
-            
-            const text = `GURU: ${guru}\nNIP: ${nip}\nSEKOLAH: ${sekolah}\nMAPEL: ${mapel}\n\nTP:\n${tp}\n\nKKTP:\n${kktp}\n\nLKPD:\n${lkpd}`;
+            const text = `TP:\n${tp}\n\nKKTP:\n${kktp}\n\nLKPD:\n${lkpd}`;
             navigator.clipboard.writeText(text);
-            alert("Berhasil disalin, Pak Wawan!");
+            alert("Berhasil disalin!");
         }
     </script>
 </body>
