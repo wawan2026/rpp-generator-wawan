@@ -1,4 +1,63 @@
-<script>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI RPP Generator - SDN 3 Kedungwungu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <div class="max-w-4xl mx-auto py-10 px-4">
+        
+        <header class="bg-white p-6 rounded-3xl shadow-xl mb-10 border-b-8 border-blue-600 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase">AI RPP GENERATOR</h1>
+                <p class="text-blue-600 font-bold italic text-sm text-sm">Fahrudin Andy Setyawan, S.Pd.SD | SDN 3 Kedungwungu</p>
+            </div>
+            <img src="wawan.png" class="w-20 h-20 rounded-full border-2 border-blue-600 object-cover" alt="Wawan">
+        </header>
+
+        <div class="bg-white p-8 rounded-3xl shadow-2xl border border-slate-200">
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="namaGuru" class="w-full p-4 border-2 border-slate-100 rounded-2xl outline-none" placeholder="Masukkan Nama Guru">
+                    <select id="kelas" class="w-full p-4 border-2 border-slate-100 rounded-2xl outline-none">
+                        <option value="Kelas 1">Kelas 1</option><option value="Kelas 2">Kelas 2</option>
+                        <option value="Kelas 3">Kelas 3</option><option value="Kelas 4">Kelas 4</option>
+                        <option value="Kelas 5">Kelas 5</option><option value="Kelas 6">Kelas 6</option>
+                    </select>
+                </div>
+
+                <div class="bg-blue-50 p-6 rounded-2xl">
+                    <label class="block font-black text-blue-800 mb-2 uppercase text-xs text-xs">Langkah 1: Masukkan Mata Pelajaran</label>
+                    <div class="flex gap-2">
+                        <input id="mataPelajaran" class="flex-1 p-4 border-2 border-blue-200 rounded-2xl outline-none" placeholder="Contoh: IPAS atau Matematika">
+                        <button onclick="cariTP()" id="btn-tp" class="bg-blue-600 text-white px-6 rounded-2xl font-bold hover:bg-blue-700 transition transition">Cari Tujuan</button>
+                    </div>
+                </div>
+
+                <div id="area-pilihan-tp" class="hidden space-y-4">
+                    <label class="block font-black text-slate-800 uppercase text-xs text-xs">Langkah 2: Pilih Tujuan Pembelajaran (TP)</label>
+                    <div id="list-tp" class="space-y-2"></div>
+                </div>
+
+                <button onclick="generateRPP()" id="btn-gen" class="hidden w-full bg-emerald-600 text-white font-black py-5 rounded-3xl uppercase tracking-widest shadow-lg hover:bg-emerald-700 transition-all text-lg">
+                    Susun RPP Sekarang
+                </button>
+            </div>
+        </div>
+
+        <div id="hasil-container" class="hidden mt-10 space-y-6">
+            <div id="hasil-tabel" class="bg-white p-10 shadow-2xl rounded-xl border border-black" style="font-family: 'Times New Roman', serif;"></div>
+            <button onclick="window.print()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold font-bold">Cetak / Simpan PDF</button>
+        </div>
+    </div>
+
+    <script>
         let tpTerpilih = "";
 
         async function cariTP() {
@@ -7,9 +66,9 @@
             const btn = document.getElementById('btn-tp');
             const listArea = document.getElementById('list-tp');
             
-            if(!mapel) return alert("Ketik dulu Mata Pelajarannya ya, Pak.");
+            if(!mapel) return alert("Isi Mata Pelajarannya dulu ya, Pak.");
 
-            btn.innerText = "Sedang Mencari TP...";
+            btn.innerText = "Mencari...";
             btn.disabled = true;
 
             try {
@@ -20,26 +79,20 @@
                 });
                 
                 const data = await response.json();
-                
-                if (data.error) {
-                    alert("Error: " + data.error);
-                    return;
-                }
-
                 listArea.innerHTML = "";
+                
                 data.pilihanTP.forEach((tp) => {
                     listArea.innerHTML += `
-                        <label class="flex items-start gap-3 p-4 border-2 border-slate-100 rounded-2xl hover:bg-blue-50 cursor-pointer transition-all">
+                        <label class="flex items-start gap-3 p-4 border-2 border-slate-100 rounded-2xl hover:bg-blue-50 cursor-pointer">
                             <input type="radio" name="pilih_tp" value="${tp}" class="mt-1" onclick="tpTerpilih = this.value">
-                            <span class="text-sm font-semibold text-slate-700">${tp}</span>
+                            <span class="text-sm font-medium">${tp}</span>
                         </label>`;
                 });
 
                 document.getElementById('area-pilihan-tp').classList.remove('hidden');
                 document.getElementById('btn-gen').classList.remove('hidden');
             } catch (e) {
-                console.error(e);
-                alert("Gagal koneksi ke server.");
+                alert("Gagal mengambil data TP.");
             } finally {
                 btn.innerText = "Cari Tujuan";
                 btn.disabled = false;
@@ -47,13 +100,42 @@
         }
 
         async function generateRPP() {
-            // ... kode generate RPP Bapak yang sebelumnya ...
+            const btn = document.getElementById('btn-gen');
+            btn.innerText = "SEDANG MENYUSUN RPP...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mode: "GENERATE_RPP",
+                        namaGuru: document.getElementById('namaGuru').value,
+                        kelas: document.getElementById('kelas').value,
+                        mataPelajaran: document.getElementById('mataPelajaran').value,
+                        tujuanPembelajaran: tpTerpilih
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('hasil-tabel').innerHTML = `
+                    <h2 class="text-center font-bold underline uppercase mb-4">RENCANA PELAKSANAAN PEMBELAJARAN</h2>
+                    <div class="space-y-4 text-sm">
+                        <p><strong>I. TUJUAN:</strong> ${tpTerpilih}</p>
+                        <p><strong>II. ANALISIS SISWA:</strong> ${data.identifikasi.siswa}</p>
+                        <p><strong>III. KEGIATAN:</strong></p>
+                        <p class="pl-4">A. Pendahuluan: ${data.pengalaman.pendahuluan}</p>
+                        <p class="pl-4">B. Inti: ${data.pengalaman.memahami}</p>
+                    </div>`;
+                document.getElementById('hasil-container').classList.remove('hidden');
+                document.getElementById('hasil-container').scrollIntoView({ behavior: 'smooth' });
+            } catch (e) {
+                alert("Gagal menyusun RPP.");
+            } finally {
+                btn.innerText = "Susun RPP Sekarang";
+                btn.disabled = false;
+            }
         }
-    </script> ```
-
-### Tips Cepat:
-Kalau Bapak merasa ragu bagian mana yang terhapus, paling aman adalah Bapak **Copy ulang** seluruh kode **`index.html`** lengkap yang saya berikan sebelumnya, lalu **Paste** semuanya untuk menggantikan isi yang sekarang.
-
-Setelah di-save (Commit), tunggu sebentar lalu buka lagi aplikasinya. Foto Bapak dan tombol-tombolnya pasti akan muncul kembali dengan rapi.
-
-**Sudah Bapak coba pasang tag `<script>` nya kembali?** Kabari saya ya Pak kalau tampilannya sudah ganteng lagi seperti semula.
+    </script>
+</body>
+</html>
