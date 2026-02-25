@@ -3,24 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Rencana Pembelajaran - Pak Wawan</title>
+    <title>Generator RPP Deep Learning - Pak Wawan</title>
     <style>
         :root { --primary: #2d3192; --secondary: #1a1c54; --accent: #4f46e5; --bg: #f8fafc; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
-        .header { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 30px; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .header { 
+            background: linear-gradient(135deg, var(--primary), var(--accent)); 
+            color: white; padding: 30px; border-radius: 15px 15px 0 0; 
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
         .header img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
-        .container { max-width: 850px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
+
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
         .section-title { color: var(--primary); font-weight: bold; border-left: 4px solid var(--primary); padding-left: 10px; margin: 25px 30px 15px; text-align: left; }
+        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 30px; }
         .full-width { grid-column: span 2; }
+        
         label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; text-align: left; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fcfcfc; }
-        .btn-group { padding: 30px; display: flex; gap: 15px; justify-content: center; }
-        button { flex: 1; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        
+        .btn-group { padding: 30px; display: flex; gap: 15px; flex-wrap: wrap; }
+        button { flex: 1; min-width: 200px; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: #10b981; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        
+        /* Area Hasil yang akan di-export ke Word */
+        #printableArea { padding: 0 30px 30px; display: none; }
+        .result-box { background: #f1f5f9; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; white-space: pre-wrap; font-size: 14px; line-height: 1.6; }
+
         .footer-credit { padding: 20px; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; text-align: center; }
-        .spinner { width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+        .spinner { width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; display: none; vertical-align: middle; margin-right: 8px; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -28,18 +43,22 @@
     <div class="container">
         <div class="header">
             <div style="text-align:left;">
-                <h1 style="margin:0; font-size:22px;">GENERATOR RENCANA PEMBELAJARAN</h1>
-                <p style="margin:5px 0 0; opacity:0.8; font-size:13px;">Deep Learning Lesson Plan Specialist</p>
+                <h1 style="margin:0; font-size:22px;">GENERATOR RPP DEEP LEARNING</h1>
+                <p style="margin:5px 0 0; opacity:0.8; font-size:13px;">Kurikulum Merdeka Specialist</p>
                 <input type="text" id="devName" value="Fahrudin Andy Setyawan, S.Pd.SD" style="background:none; border:none; color:white; font-size:12px; padding:0; width:300px; margin-top:10px; font-weight:bold;">
             </div>
-            <img src="wawan.png" alt="Foto">
+            <img src="wawan.png" alt="Foto Pak Wawan">
         </div>
 
-        <div class="section-title">Identitas Pendidik & Akademik</div>
+        <div class="section-title">Identitas Pendidik & Sekolah</div>
         <div class="form-grid">
-            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Ketik Nama Guru"></div>
-            <div><label>NIP</label><input type="text" id="nipGuru" placeholder="Ketik NIP"></div>
-            <div class="full-width"><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Ketik Nama Sekolah"></div>
+            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Nama Guru"></div>
+            <div><label>NIP</label><input type="text" id="nipGuru" placeholder="NIP"></div>
+            <div class="full-width"><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Nama Sekolah"></div>
+        </div>
+
+        <div class="section-title">Konfigurasi Akademik</div>
+        <div class="form-grid">
             <div>
                 <label>Pilih Kelas</label>
                 <select id="kelas">
@@ -65,40 +84,38 @@
 
         <div class="btn-group">
             <button class="btn-primary" id="btnGen" onclick="generateAI()">
-                <div id="loader" class="spinner" style="display:none; vertical-align:middle; margin-right:8px;"></div>
-                <span id="btnText">GENERATE SEKARANG</span>
+                <div id="loader" class="spinner"></div>
+                <span id="btnText">GENERATE RPP & LKPD</span>
             </button>
-            <button class="btn-secondary" onclick="copyAction()">SALIN SEMUA HASIL</button>
+            <button class="btn-success" id="btnDownload" onclick="downloadWord()" style="display:none;">UNDUH FILE WORD (.DOC)</button>
         </div>
 
-        <div class="section-title">Hasil Analisis AI</div>
-        <div class="form-grid">
-            <div class="full-width">
-                <label>Tujuan Pembelajaran (TP)</label>
-                <textarea id="resTujuan" rows="3" placeholder="Hasil TP..."></textarea>
-            </div>
-            <div class="full-width">
-                <label>KKTP</label>
-                <textarea id="resKKTP" rows="3" placeholder="Hasil KKTP..."></textarea>
-            </div>
-            <div class="full-width">
-                <label>Draf LKPD</label>
-                <textarea id="resLKPD" rows="6" placeholder="Hasil LKPD..."></textarea>
-            </div>
+        <div id="printableArea">
+            <div class="section-title" style="margin-left:0;">Hasil Pratinjau RPP</div>
+            <textarea id="outputDisplay" rows="15" class="result-box" readonly></textarea>
         </div>
 
-        <div class="footer-credit">Aplikasi dikembangkan oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong></div>
+        <div class="footer-credit">
+            Dikembangkan secara mandiri oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong>
+        </div>
     </div>
 
     <script>
         async function generateAI() {
-            const kelas = document.getElementById('kelas').value;
-            const mapel = document.getElementById('mapel').value;
+            const dataIn = {
+                kelas: document.getElementById('kelas').value,
+                mapel: document.getElementById('mapel').value,
+                namaGuru: document.getElementById('namaGuru').value,
+                nip: document.getElementById('nipGuru').value,
+                namaSekolah: document.getElementById('namaSekolah').value
+            };
+
             const btn = document.getElementById('btnGen');
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btnText');
+            const resArea = document.getElementById('printableArea');
 
-            if(!mapel) return alert("Pak Wawan, mohon pilih mata pelajaran terlebih dahulu!");
+            if(!dataIn.mapel) return alert("Pak Wawan, mohon pilih mata pelajaran dulu!");
 
             btn.disabled = true;
             loader.style.display = 'inline-block';
@@ -108,33 +125,64 @@
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ kelas, mapel })
+                    body: JSON.stringify(dataIn)
                 });
 
                 const data = await response.json();
                 
-                // Sinkronisasi ID Kotak Tampilan
-                document.getElementById('resTujuan').value = data.tujuan || "Gagal memuat TP";
-                document.getElementById('resKKTP').value = data.kktp || "Gagal memuat KKTP";
-                document.getElementById('resLKPD').value = data.lkpd || "Gagal memuat LKPD";
+                // Format teks untuk tampilan preview
+                const formattedText = `
+RENCANA PEMBELAJARAN MENDALAM (DEEP LEARNING)
+Guru: ${dataIn.namaGuru} | NIP: ${dataIn.nip}
+Sekolah: ${dataIn.namaSekolah}
+
+1. TUJUAN PEMBELAJARAN (TP):
+${data.tp}
+
+2. KKTP:
+${data.kktp}
+
+3. DESAIN PEMBELAJARAN:
+- Pendahuluan: ${data.langkah_pendahuluan}
+- Memahami: ${data.langkah_memahami}
+- Aplikasi: ${data.langkah_aplikasi}
+- Refleksi: ${data.langkah_refleksi}
+
+4. LEMBAR KERJA (LKPD):
+${data.lkpd_tugas}
+
+5. RUBRIK PENILAIAN:
+${data.rubrik}
+                `.trim();
+
+                document.getElementById('outputDisplay').value = formattedText;
+                resArea.style.display = 'block';
+                document.getElementById('btnDownload').style.display = 'inline-block';
 
             } catch (err) {
-                alert("Sistem sedang sibuk. Silakan coba lagi.");
+                alert("Sistem sibuk, silakan coba lagi beberapa saat lagi.");
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';
-                btnText.innerText = "GENERATE SEKARANG";
+                btnText.innerText = "GENERATE RPP & LKPD";
             }
         }
 
-        function copyAction() {
-            const tp = document.getElementById('resTujuan').value;
-            const kktp = document.getElementById('resKKTP').value;
-            const lkpd = document.getElementById('resLKPD').value;
-            if(!tp) return alert("Belum ada data untuk disalin.");
-            const text = `TP:\n${tp}\n\nKKTP:\n${kktp}\n\nLKPD:\n${lkpd}`;
-            navigator.clipboard.writeText(text);
-            alert("Berhasil disalin!");
+        function downloadWord() {
+            const content = document.getElementById('outputDisplay').value;
+            // Mengubah line break menjadi <br> agar rapi di Word
+            const htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><style>body{font-family:'Times New Roman'; font-size:12pt;}</style></head>
+                <body>${content.replace(/\n/g, '<br>')}</body>
+                </html>`;
+            
+            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `RPP_${document.getElementById('mapel').value}_Kelas${document.getElementById('kelas').value}.doc`;
+            link.click();
         }
     </script>
 </body>
