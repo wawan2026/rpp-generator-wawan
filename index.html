@@ -9,8 +9,22 @@
         .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         img { width: 120px; border-radius: 15px; margin-bottom: 10px; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         select, input, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 16px; box-sizing: border-box; }
-        button { background-color: #2563eb; color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        
+        button { 
+            background-color: #2563eb; color: white; font-weight: bold; cursor: pointer; border: none; 
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        }
         button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        /* Animasi Muter-muter */
+        .spinner {
+            width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%; border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            display: none; /* Sembunyi saat tidak loading */
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         #result { margin-top: 25px; text-align: left; display: none; background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 5px solid #2563eb; }
         .label-rpp { font-weight: bold; color: #475569; margin-top: 10px; display: block; }
     </style>
@@ -19,14 +33,21 @@
     <div class="card">
         <img src="wawan.png" alt="Foto Pak Wawan">
         <h2>Generator RPP Merdeka</h2>
+        
         <select id="kelas">
             <option value="1">Kelas 1</option><option value="2">Kelas 2</option><option value="3">Kelas 3</option>
             <option value="4">Kelas 4</option><option value="5">Kelas 5</option><option value="6">Kelas 6</option>
         </select>
+        
         <input type="text" id="mapel" placeholder="Ketik Mata Pelajaran...">
-        <button id="btnGenerate" onclick="generateRPP()">Generate Sekarang</button>
+        
+        <button id="btnGenerate" onclick="generateRPP()">
+            <div id="loader" class="spinner"></div>
+            <span id="btnText">Generate Sekarang</span>
+        </button>
+
         <div id="result">
-            <h3 id="resTitle" style="color:#1e40af;"></h3>
+            <h3 id="resTitle" style="color:#1e40af; margin-top:0;"></h3>
             <span class="label-rpp">Tujuan Pembelajaran (TP):</span>
             <p id="resTujuan"></p>
             <span class="label-rpp">KKTP (Kriteria Ketercapaian):</span>
@@ -39,15 +60,20 @@
             const kelas = document.getElementById('kelas').value;
             const mapel = document.getElementById('mapel').value;
             const btn = document.getElementById('btnGenerate');
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btnText');
             const resDiv = document.getElementById('result');
             
             if(!mapel) return alert("Pak Wawan, mohon isi mata pelajarannya!");
 
+            // Mulai Loading
             btn.disabled = true;
-            btn.innerText = "Sabar, AI sedang bekerja (30 detik)...";
+            loader.style.display = "block";
+            btnText.innerText = "Sabar, AI Sedang Berpikir...";
+            
             resDiv.style.display = 'block';
-            document.getElementById('resTujuan').innerText = "Sedang menyusun...";
-            document.getElementById('resKKTP').innerText = "Sedang menghitung...";
+            document.getElementById('resTujuan').innerText = "Menyusun indikator...";
+            document.getElementById('resKKTP').innerText = "Menghitung kriteria...";
 
             try {
                 const response = await fetch('/api/generate', {
@@ -55,17 +81,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ kelas, mapel })
                 });
+
                 const data = await response.json();
+                
                 document.getElementById('resTitle').innerText = "Hasil " + mapel + " Kelas " + kelas;
                 document.getElementById('resTujuan').innerText = data.tujuan;
                 document.getElementById('resKKTP').innerText = data.kktp;
             } catch (err) {
-                document.getElementById('resTujuan').innerText = "Gagal memuat, coba sesaat lagi.";
+                document.getElementById('resTujuan').innerText = "Gagal memuat. Silakan cek koneksi atau API Key.";
             }
 
+            // Selesai Loading (Tombol mati selama 30 detik untuk cooldown)
             setTimeout(() => {
                 btn.disabled = false;
-                btn.innerText = "Generate Sekarang";
+                loader.style.display = "none";
+                btnText.innerText = "Generate Sekarang";
             }, 30000);
         }
     </script>
