@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Rencana Pembelajaran - Pak Wawan</title>
+    <title>Generator Rencana Pembelajaran</title>
     <style>
         :root { --primary: #2d3192; --secondary: #1a1c54; --accent: #4f46e5; --bg: #f8fafc; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
         
-        /* Header dengan Foto di Kanan */
         .header { 
             background: linear-gradient(135deg, var(--primary), var(--accent)); 
             color: white; padding: 30px; border-radius: 15px 15px 0 0; 
@@ -35,7 +34,6 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #334155; color: white; }
 
-        /* Footer Nama Pembuat */
         .footer-credit { 
             padding: 20px; font-size: 12px; color: #94a3b8; 
             border-top: 1px solid #f1f5f9; text-align: center;
@@ -52,14 +50,15 @@
             <div class="header-text">
                 <h1 style="margin:0; font-size:22px;">GENERATOR RENCANA PEMBELAJARAN</h1>
                 <p style="margin:5px 0 0; opacity:0.8; font-size:13px;">Deep Learning Lesson Plan Specialist</p>
+                <input type="text" id="devName" value="Fahrudin Andy Setyawan, S.Pd.SD" style="background:none; border:none; color:white; font-size:11px; padding:0; width:auto; margin-top:10px;" placeholder="Nama Pembuat">
             </div>
-            <img src="wawan.png" alt="Foto Pak Wawan">
+            <img src="wawan.png" alt="Foto">
         </div>
 
         <div class="section-title">Identitas Pendidik</div>
         <div class="form-grid">
-            <div><label>Nama Guru</label><input type="text" value="Fahrudin Andy Setyawan, S.Pd.SD" readonly></div>
-            <div><label>Satuan Pendidikan</label><input type="text" value="SD Negeri 3 Kedungwungu" readonly></div>
+            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Masukkan Nama Guru"></div>
+            <div><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Masukkan Nama Sekolah"></div>
         </div>
 
         <div class="section-title">Akademik</div>
@@ -74,7 +73,7 @@
             </div>
             <div>
                 <label>Mata Pelajaran</label>
-                <input type="text" id="mapel" placeholder="Ketik Mapel (Contoh: IPAS)">
+                <input type="text" id="mapel" placeholder="Ketik Mapel (Contoh: Matematika)">
             </div>
         </div>
 
@@ -100,9 +99,8 @@
             <button class="btn-secondary" onclick="copyAction()">SALIN HASIL</button>
         </div>
 
-        <div class="footer-credit">
-            Aplikasi ini dikembangkan oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong> <br>
-            Kepala Sekolah SDN 3 Kedungwungu
+        <div class="footer-credit" id="footerText">
+            Aplikasi dikembangkan secara mandiri untuk kemajuan pendidikan Indonesia.
         </div>
     </div>
 
@@ -113,7 +111,7 @@
             const btn = document.getElementById('btnGen');
             const load = document.getElementById('loadBox');
 
-            if(!mapel) return alert("Pilih mata pelajaran dulu ya, Pak!");
+            if(!mapel) return alert("Pilih mata pelajaran dulu ya!");
 
             btn.disabled = true;
             load.style.display = 'flex';
@@ -134,16 +132,20 @@
             setTimeout(() => {
                 btn.disabled = false;
                 load.style.display = 'none';
-            }, 5000);
+            }, 3000);
         }
 
         function copyAction() {
+            const guru = document.getElementById('namaGuru').value;
+            const sekolah = document.getElementById('namaSekolah').value;
             const tp = document.getElementById('resTujuan').value;
             const kktp = document.getElementById('resKKTP').value;
-            if(!tp) return alert("Belum ada hasil yang bisa disalin.");
-            const text = `TUJUAN PEMBELAJARAN:\n${tp}\n\nKKTP:\n${kktp}`;
+            
+            if(!tp) return alert("Belum ada hasil.");
+            
+            const text = `GURU: ${guru}\nSEKOLAH: ${sekolah}\n\nTUJUAN PEMBELAJARAN:\n${tp}\n\nKKTP:\n${kktp}`;
             navigator.clipboard.writeText(text);
-            alert("Hasil RPP berhasil disalin ke clipboard!");
+            alert("Hasil RPP berhasil disalin!");
         }
     </script>
 </body>
