@@ -1,28 +1,14 @@
 async function generateRPP() {
-    const kelas = document.getElementById('kelas').value;
-    const mapel = document.getElementById('mapel').value;
-    const resDiv = document.getElementById('result');
+    // ... bagian atas tetap sama ...
+    const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kelas, mapel })
+    });
+
+    const data = await response.json();
     
-    if(!mapel) return alert("Isi mata pelajaran dulu, Pak!");
-
-    // Tampilkan status loading
-    resDiv.style.display = 'block';
-    document.getElementById('resTujuan').innerText = "Sedang menyusun TP...";
-    document.getElementById('resKKM').innerText = "Sedang menghitung...";
-
-    try {
-        const response = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ kelas, mapel })
-        });
-
-        const data = await response.json();
-        
-        document.getElementById('resTitle').innerText = "Hasil RPP " + mapel + " Kelas " + kelas;
-        document.getElementById('resTujuan').innerText = data.tujuan || "Tujuan tidak ditemukan";
-        document.getElementById('resKKM').innerText = data.kkm || "KKM tidak ditemukan";
-    } catch (err) {
-        document.getElementById('resTujuan').innerText = "Koneksi terputus, coba lagi.";
-    }
+    // Pastikan data yang diambil sesuai dengan kunci di JSON
+    document.getElementById('resTujuan').innerText = data.tujuan || "Data belum masuk";
+    document.getElementById('resKKM').innerText = data.kkm || "Data belum masuk";
 }
