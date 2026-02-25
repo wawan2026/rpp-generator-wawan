@@ -73,7 +73,18 @@
             </div>
             <div>
                 <label>Mata Pelajaran</label>
-                <input type="text" id="mapel" placeholder="Ketik Mapel (Contoh: Matematika)">
+                <select id="mapel">
+                    <option value="">-- Pilih Mata Pelajaran --</option>
+                    <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                    <option value="Matematika">Matematika</option>
+                    <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                    <option value="IPAS">IPAS (Ilmu Pengetahuan Alam & Sosial)</option>
+                    <option value="Pendidikan Agama Islam">Pendidikan Agama Islam</option>
+                    <option value="PJOK">PJOK (Pendidikan Jasmani)</option>
+                    <option value="Seni Rupa">Seni Rupa</option>
+                    <option value="Seni Musik">Seni Musik</option>
+                    <option value="Bahasa Inggris">Bahasa Inggris</option>
+                </select>
             </div>
         </div>
 
@@ -99,7 +110,7 @@
             <button class="btn-secondary" onclick="copyAction()">SALIN HASIL</button>
         </div>
 
-        <div class="footer-credit" id="footerText">
+        <div class="footer-credit">
             Aplikasi dikembangkan secara mandiri untuk kemajuan pendidikan Indonesia.
         </div>
     </div>
@@ -138,12 +149,13 @@
         function copyAction() {
             const guru = document.getElementById('namaGuru').value;
             const sekolah = document.getElementById('namaSekolah').value;
+            const mapel = document.getElementById('mapel').value;
             const tp = document.getElementById('resTujuan').value;
             const kktp = document.getElementById('resKKTP').value;
             
             if(!tp) return alert("Belum ada hasil.");
             
-            const text = `GURU: ${guru}\nSEKOLAH: ${sekolah}\n\nTUJUAN PEMBELAJARAN:\n${tp}\n\nKKTP:\n${kktp}`;
+            const text = `GURU: ${guru}\nSEKOLAH: ${sekolah}\nMAPEL: ${mapel}\n\nTUJUAN PEMBELAJARAN:\n${tp}\n\nKKTP:\n${kktp}`;
             navigator.clipboard.writeText(text);
             alert("Hasil RPP berhasil disalin!");
         }
