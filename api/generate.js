@@ -2,11 +2,10 @@ module.exports = async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
+    return res.status(405).json({ message: 'Gunakan POST' });
   }
 
   try {
-    // Memanggil API Google secara langsung tanpa modul tambahan
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -22,9 +21,9 @@ module.exports = async (req, res) => {
       const resultText = data.candidates[0].content.parts[0].text;
       res.status(200).json(JSON.parse(resultText));
     } else {
-      res.status(500).json({ error: "Respon AI tidak valid", detail: data });
+      res.status(500).json({ error: "Data AI tidak ditemukan", detail: data });
     }
   } catch (error) {
-    res.status(500).json({ error: "Kesalahan Server: " + error.message });
+    res.status(500).json({ error: "Kesalahan: " + error.message });
   }
 };
