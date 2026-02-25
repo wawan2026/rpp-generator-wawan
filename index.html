@@ -8,7 +8,6 @@
         :root { --primary: #2d3192; --secondary: #1a1c54; --accent: #4f46e5; --bg: #f8fafc; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
         
-        /* Header dengan Foto Bapak */
         .header { 
             background: linear-gradient(135deg, var(--primary), var(--accent)); 
             color: white; padding: 30px; border-radius: 15px 15px 0 0; 
@@ -26,14 +25,13 @@
         label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; text-align: left; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fcfcfc; }
         
-        /* SEMUA TOMBOL (Generate, Salin, Download) */
-        .btn-group { padding: 30px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        button { flex: 1; min-width: 180px; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .btn-group { padding: 30px; display: flex; gap: 15px; flex-wrap: wrap; }
+        button { flex: 1; min-width: 200px; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-info { background: #0ea5e9; color: white; } /* Biru muda untuk Salin */
-        .btn-success { background: #10b981; color: white; } /* Hijau untuk Download */
+        .btn-success { background: #10b981; color: white; }
         
-        #resultSection { padding: 0 30px 30px; display: none; }
+        /* Area Hasil yang akan di-export ke Word */
+        #printableArea { padding: 0 30px 30px; display: none; }
         .result-box { background: #f1f5f9; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; white-space: pre-wrap; font-size: 14px; line-height: 1.6; }
 
         .footer-credit { padding: 20px; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; text-align: center; }
@@ -52,11 +50,15 @@
             <img src="wawan.png" alt="Foto Pak Wawan">
         </div>
 
-        <div class="section-title">Identitas & Administrasi</div>
+        <div class="section-title">Identitas Pendidik & Sekolah</div>
         <div class="form-grid">
-            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Ketik Nama Guru"></div>
-            <div><label>NIP</label><input type="text" id="nipGuru" placeholder="Masukkan NIP"></div>
+            <div><label>Nama Guru</label><input type="text" id="namaGuru" placeholder="Nama Guru"></div>
+            <div><label>NIP</label><input type="text" id="nipGuru" placeholder="NIP"></div>
             <div class="full-width"><label>Satuan Pendidikan</label><input type="text" id="namaSekolah" placeholder="Nama Sekolah"></div>
+        </div>
+
+        <div class="section-title">Konfigurasi Akademik</div>
+        <div class="form-grid">
             <div>
                 <label>Pilih Kelas</label>
                 <select id="kelas">
@@ -83,21 +85,18 @@
         <div class="btn-group">
             <button class="btn-primary" id="btnGen" onclick="generateAI()">
                 <div id="loader" class="spinner"></div>
-                <span id="btnText">GENERATE RPP SEKARANG</span>
+                <span id="btnText">GENERATE RPP & LKPD</span>
             </button>
-            
-            <button class="btn-info" id="btnCopy" onclick="copyAction()" style="display:none;">SALIN TEKS</button>
-            
-            <button class="btn-success" id="btnDownload" onclick="downloadWord()" style="display:none;">UNDUH WORD (.DOC)</button>
+            <button class="btn-success" id="btnDownload" onclick="downloadWord()" style="display:none;">UNDUH FILE WORD (.DOC)</button>
         </div>
 
-        <div id="resultSection">
-            <div class="section-title" style="margin-left:0;">Hasil Pratinjau RPP & LKPD</div>
+        <div id="printableArea">
+            <div class="section-title" style="margin-left:0;">Hasil Pratinjau RPP</div>
             <textarea id="outputDisplay" rows="15" class="result-box" readonly></textarea>
         </div>
 
         <div class="footer-credit">
-            Aplikasi dikembangkan oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong>
+            Dikembangkan secara mandiri oleh <strong>Fahrudin Andy Setyawan, S.Pd.SD</strong>
         </div>
     </div>
 
@@ -114,6 +113,7 @@
             const btn = document.getElementById('btnGen');
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btnText');
+            const resArea = document.getElementById('printableArea');
 
             if(!dataIn.mapel) return alert("Pak Wawan, mohon pilih mata pelajaran dulu!");
 
@@ -130,14 +130,11 @@
 
                 const data = await response.json();
                 
+                // Format teks untuk tampilan preview
                 const formattedText = `
-RPP KURIKULUM MERDEKA (DEEP LEARNING)
--------------------------------------
-GURU     : ${dataIn.namaGuru}
-NIP      : ${dataIn.nip}
-SEKOLAH  : ${dataIn.namaSekolah}
-MAPEL    : ${dataIn.mapel}
-KELAS    : ${dataIn.kelas}
+RENCANA PEMBELAJARAN MENDALAM (DEEP LEARNING)
+Guru: ${dataIn.namaGuru} | NIP: ${dataIn.nip}
+Sekolah: ${dataIn.namaSekolah}
 
 1. TUJUAN PEMBELAJARAN (TP):
 ${data.tp}
@@ -145,13 +142,13 @@ ${data.tp}
 2. KKTP:
 ${data.kktp}
 
-3. DESAIN PEMBELAJARAN DEEP LEARNING:
+3. DESAIN PEMBELAJARAN:
 - Pendahuluan: ${data.langkah_pendahuluan}
 - Memahami: ${data.langkah_memahami}
 - Aplikasi: ${data.langkah_aplikasi}
 - Refleksi: ${data.langkah_refleksi}
 
-4. DRAF LKPD:
+4. LEMBAR KERJA (LKPD):
 ${data.lkpd_tugas}
 
 5. RUBRIK PENILAIAN:
@@ -159,36 +156,32 @@ ${data.rubrik}
                 `.trim();
 
                 document.getElementById('outputDisplay').value = formattedText;
-                document.getElementById('resultSection').style.display = 'block';
-                document.getElementById('btnCopy').style.display = 'inline-block';
+                resArea.style.display = 'block';
                 document.getElementById('btnDownload').style.display = 'inline-block';
 
             } catch (err) {
-                alert("Koneksi terputus, silakan klik Generate lagi.");
+                alert("Sistem sibuk, silakan coba lagi beberapa saat lagi.");
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';
-                btnText.innerText = "GENERATE RPP SEKARANG";
+                btnText.innerText = "GENERATE RPP & LKPD";
             }
-        }
-
-        function copyAction() {
-            const text = document.getElementById('outputDisplay').value;
-            navigator.clipboard.writeText(text);
-            alert("Hasil RPP berhasil disalin, Pak Wawan!");
         }
 
         function downloadWord() {
             const content = document.getElementById('outputDisplay').value;
+            // Mengubah line break menjadi <br> agar rapi di Word
             const htmlContent = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head><meta charset='utf-8'></head>
-                <body style="font-family:'Times New Roman'">${content.replace(/\n/g, '<br>')}</body>
+                <head><meta charset='utf-8'><style>body{font-family:'Times New Roman'; font-size:12pt;}</style></head>
+                <body>${content.replace(/\n/g, '<br>')}</body>
                 </html>`;
+            
             const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `RPP_${document.getElementById('mapel').value}.doc`;
+            link.href = url;
+            link.download = `RPP_${document.getElementById('mapel').value}_Kelas${document.getElementById('kelas').value}.doc`;
             link.click();
         }
     </script>
