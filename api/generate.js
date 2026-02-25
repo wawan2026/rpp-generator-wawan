@@ -1,5 +1,7 @@
+// generate.js
+
 async function generateAI() {
-    const payload = {
+    const dataIn = {
         kelas: document.getElementById('kelas').value,
         mapel: document.getElementById('mapel').value,
         namaGuru: document.getElementById('namaGuru').value,
@@ -8,44 +10,79 @@ async function generateAI() {
     };
 
     const btn = document.getElementById('btnGen');
-    const load = document.getElementById('loadBox');
-    
-    if(!payload.mapel) return alert("Pilih mata pelajaran dulu, Pak!");
-    
+    const loader = document.getElementById('loader');
+    const btnText = document.getElementById('btnText');
+    const resArea = document.getElementById('printableArea');
+
+    if (!dataIn.mapel) return alert("Pak Wawan, mohon pilih mata pelajaran dulu!");
+
     btn.disabled = true;
-    load.style.display = 'flex';
+    loader.style.display = 'inline-block';
+    btnText.innerText = "SEDANG MENYUSUN...";
 
     try {
         const response = await fetch('/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(dataIn)
         });
+
         const data = await response.json();
-        
-        // Tampilkan hasil ke dalam format tabel di layar
-        document.getElementById('resTujuan').value = data.tp;
-        document.getElementById('resKKTP').value = data.kktp;
-        document.getElementById('resLKPD').value = `PEMBELAJARAN DEEP LEARNING:\n\n1. Memahami: ${data.langkah_memahami}\n\n2. Aplikasi: ${data.langkah_aplikasi}\n\n3. Refleksi: ${data.langkah_refleksi}\n\nLKPD:\n${data.lkpd_tugas}\n\nRUBRIK:\n${data.rubrik}`;
-        
-        alert("RPP Berhasil disusun sesuai format Deep Learning!");
+
+        // Format teks untuk tampilan preview
+        const formattedText = `
+RENCANA PEMBELAJARAN MENDALAM (DEEP LEARNING)
+Guru: ${dataIn.namaGuru} | NIP: ${dataIn.nip}
+Sekolah: ${dataIn.namaSekolah}
+
+1. TUJUAN PEMBELAJARAN (TP):
+${data.tp}
+
+2. KKTP:
+${data.kktp}
+
+3. DESAIN PEMBELAJARAN:
+- Pendahuluan: ${data.langkah_pendahuluan}
+- Memahami: ${data.langkah_memahami}
+- Aplikasi: ${data.langkah_aplikasi}
+- Refleksi: ${data.langkah_refleksi}
+
+4. LEMBAR KERJA (LKPD):
+${data.lkpd_tugas}
+
+5. RUBRIK PENILAIAN:
+${data.rubrik}
+        `.trim();
+
+        document.getElementById('outputDisplay').value = formattedText;
+        resArea.style.display = 'block';
+        document.getElementById('btnDownload').style.display = 'inline-block';
+
     } catch (err) {
-        alert("Terjadi kesalahan teknis.");
+        alert("Sistem sibuk, silakan coba lagi beberapa saat lagi.");
     } finally {
         btn.disabled = false;
-        load.style.display = 'none';
+        loader.style.display = 'none';
+        btnText.innerText = "GENERATE RPP & LKPD";
     }
 }
 
-// Fungsi Spesial Download ke Microsoft Word
-function downloadDoc() {
-    const guru = document.getElementById('namaGuru').value;
-    const tp = document.getElementById('resTujuan').value;
-    const content = `<h2>RPP MERDEKA - DEEP LEARNING</h2><p>Guru: ${guru}</p><table border="1"><tr><td>TP</td><td>${tp}</td></tr></table>`;
-    
-    const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+function downloadWord() {
+    const content = document.getElementById('outputDisplay').value;
+    // Mengubah line break menjadi <br> agar rapi di Word
+    const htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+              xmlns:w='urn:schemas-microsoft-com:office:word' 
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'>
+        <style>body{font-family:'Times New Roman'; font-size:12pt;}</style></head>
+        <body>${content.replace(/\n/g, '<br>')}</body>
+        </html>`;
+
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'RPP_Pak_Wawan.doc';
+    link.href = url;
+    link.download = `RPP_${document.getElementById('mapel').value}_Kelas${document.getElementById('kelas').value}.doc`;
     link.click();
 }
